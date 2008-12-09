@@ -61,6 +61,7 @@ module Enumerable # :nodoc: all
 end
 
 # Load ActiveResource
+gem 'activeresource', '>= 2.1.0'
 require 'active_resource'
 module ActiveResource # :nodoc: all
   class Base
