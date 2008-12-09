@@ -1,0 +1,9 @@
+Example Usage:
+
+	Shopify.current_session = Shopify::Session.new('store_name', 'api-key', 'api-secret')
+	Shopify.current_session.token = 'api-session-token'
+	Shopify.apply_current_session!
+
+	Shopify::Shop.current
+	Shopify::Product.find(:first)
+	Shopify::Order.find(:first)

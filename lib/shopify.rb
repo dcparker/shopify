@@ -32,6 +32,11 @@ module Shopify
       sessions.last
     end
 
+    # Sets the current_session / appends a session to the sessions stack.
+    def current_session=(session)
+      sessions << session
+    end
+
     # Injects the generated site (with basic auth params) into the ActiveResource::Base subclasses.
     def apply_current_session!
       current_session.apply!
