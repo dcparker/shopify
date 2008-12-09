@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Tue Dec 09 13:47:47 -0500 2008</td>
+      <td>Tue Dec 09 14:44:44 -0500 2008</td>
     </tr>
     </table>
   </div>
@@ -68,6 +68,21 @@
 
   <div id="contextContent">
 
+    <div id="description">
+      <p>
+Example Usage:
+</p>
+<pre>
+        Shopify.current_session = Shopify::Session.new('store_name', 'api-key', 'api-secret')
+        Shopify.current_session.token = 'api-session-token'
+        Shopify.apply_current_session!
+
+        Shopify::Shop.current
+        Shopify::Product.find(:first)
+        Shopify::Order.find(:first)
+</pre>
+
+    </div>
 
 
    </div>

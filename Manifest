@@ -9,5 +9,5 @@ lib/shopify/site.rb
 lib/shopify.rb
 LICENSE
 Manifest
-Rakefile
 README
+shopify.gemspec

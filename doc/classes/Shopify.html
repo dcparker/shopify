@@ -108,10 +108,11 @@
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000003">apply_current_session!</a>&nbsp;&nbsp;
+      <a href="#M000004">apply_current_session!</a>&nbsp;&nbsp;
       <a href="#M000002">current_session</a>&nbsp;&nbsp;
+      <a href="#M000003">current_session=</a>&nbsp;&nbsp;
       <a href="#M000001">sessions</a>&nbsp;&nbsp;
-      <a href="#M000004">with_session</a>&nbsp;&nbsp;
+      <a href="#M000005">with_session</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -175,11 +176,11 @@ Class <a href="Shopify/Variant.html" class="link">Shopify::Variant</a><br />
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000003" class="method-detail">
-        <a name="M000003"></a>
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
 
         <div class="method-heading">
-          <a href="#M000003" class="method-signature">
+          <a href="#M000004" class="method-signature">
           <span class="method-name">apply_current_session!</span><span class="method-args">()</span>
           </a>
         </div>
@@ -190,13 +191,13 @@ Injects the generated site (with basic auth params) into the
 ActiveResource::Base subclasses.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000003-source">
+            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000004-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/shopify.rb, line 36</span>
-36:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">apply_current_session!</span>
-37:       <span class="ruby-identifier">current_session</span>.<span class="ruby-identifier">apply!</span>
-38:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/shopify.rb, line 41</span>
+41:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">apply_current_session!</span>
+42:       <span class="ruby-identifier">current_session</span>.<span class="ruby-identifier">apply!</span>
+43:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -229,6 +230,33 @@ stack.
         </div>
       </div>
 
+      <div id="method-M000003" class="method-detail">
+        <a name="M000003"></a>
+
+        <div class="method-heading">
+          <a href="#M000003" class="method-signature">
+          <span class="method-name">current_session=</span><span class="method-args">(session)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Sets the <a href="Shopify.html#M000002">current_session</a> / appends a
+session to the <a href="Shopify.html#M000001">sessions</a> stack.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000003-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/shopify.rb, line 36</span>
+36:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">current_session=</span>(<span class="ruby-identifier">session</span>)
+37:       <span class="ruby-identifier">sessions</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">session</span>
+38:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
       <div id="method-M000001" class="method-detail">
         <a name="M000001"></a>
 
@@ -255,11 +283,11 @@ Lists the session stack.
         </div>
       </div>
 
-      <div id="method-M000004" class="method-detail">
-        <a name="M000004"></a>
+      <div id="method-M000005" class="method-detail">
+        <a name="M000005"></a>
 
         <div class="method-heading">
-          <a href="#M000004" class="method-signature">
+          <a href="#M000005" class="method-signature">
           <span class="method-name">with_session</span><span class="method-args">(session) {|| ...}</span>
           </a>
         </div>
@@ -270,18 +298,18 @@ Perform a block within a specific session, and reset the current session to
 the previous after execution.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000004-source">
+            onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000005-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/shopify.rb, line 41</span>
-41:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">with_session</span>(<span class="ruby-identifier">session</span>,<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
-42:       <span class="ruby-identifier">sessions</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">session</span>
-43:         <span class="ruby-identifier">apply_current_session!</span>
-44:         <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">yield</span>
-45:       <span class="ruby-identifier">sessions</span>.<span class="ruby-identifier">pop</span>
-46:       <span class="ruby-identifier">apply_current_session!</span>
-47:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">result</span>
-48:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/shopify.rb, line 46</span>
+46:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">with_session</span>(<span class="ruby-identifier">session</span>,<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+47:       <span class="ruby-identifier">sessions</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">session</span>
+48:         <span class="ruby-identifier">apply_current_session!</span>
+49:         <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">yield</span>
+50:       <span class="ruby-identifier">sessions</span>.<span class="ruby-identifier">pop</span>
+51:       <span class="ruby-identifier">apply_current_session!</span>
+52:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">result</span>
+53:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
