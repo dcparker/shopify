@@ -8,6 +8,6 @@ Echoe.new('shopify') do |p|
   p.runtime_dependencies = ["activeresource >= 2.1.0"]
   p.need_gem = true
   p.need_zip = true
-  p.require_signed = true
+  p.require_signed = false
   p.include_rakefile = false
 end
