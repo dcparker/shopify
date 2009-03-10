@@ -85,6 +85,11 @@ module Shopify
     end
   end
 
+  class LineItem < ShopifyModel
+    child_of Order
+    attr_accessor :fulfillment_service, :grams, :id, :price, :quantity, :sku, :title, :variant_id, :vendor, :name, :product_title
+  end
+
   # /admin/orders/[order_id]/fulfillments.xml
   class Fulfillment < ShopifyModel
     child_of Order

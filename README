@@ -1,9 +1,14 @@
+At 0.1.9 THIS GEM IS SHOPIFY-READ-ONLY!
+
 Example Usage:
 
-	Shopify.current_session = Shopify::Session.new('store_name', 'api-key', 'api-secret')
-	Shopify.current_session.token = 'api-session-token'
-	Shopify.apply_current_session!
+  Shopify.setup('store_name', 'api-key', 'api-secret', 'auth-token')
 
-	Shopify::Shop.current
-	Shopify::Product.find(:first)
-	Shopify::Order.find(:first)
+	Shopify.shop
+  # => gets your shop's details/configuration
+	Shopify.products
+  # => gets your products
+	order = Shopify.orders(:limit => 1)[0]
+  # => gets first order
+  order.line_items
+  # => the line items within that order

@@ -78,12 +78,12 @@ module Shopify
             @#{klass_name.snake_case.pluralize} ||= begin
               json = Shopify.get(\"/#{parent_klass_name.snake_case.pluralize}/\#{id}/#{klass_name.snake_case.pluralize}.xml\", :query => query_params)
               if json['#{parent_klass_name.snake_case}_#{klass_name.snake_case.pluralize}']
-                json['#{parent_klass_name.snake_case}_#{klass_name.snake_case.pluralize}'].collect {|i| #{klass_name}.instantiate(i)}
+                json['#{parent_klass_name.snake_case}_#{klass_name.snake_case.pluralize}']
               else
                 json
               end
             end
-            @#{klass_name.snake_case.pluralize} =  unless @#{klass_name.snake_case.pluralize}.is_a?(#{klass_name})
+            @#{klass_name.snake_case.pluralize} = (@#{klass_name.snake_case.pluralize}.is_a?(Array) ? @#{klass_name.snake_case.pluralize}.collect {|i| #{klass_name}.instantiate(i)} : #{klass_name}.instantiate(@#{klass_name.snake_case.pluralize})) unless @#{klass_name.snake_case.pluralize}.is_a?(#{klass_name}) || @#{klass_name.snake_case.pluralize}.is_a?(Array) && @#{klass_name.snake_case.pluralize}[0].is_a?(#{klass_name})
             @#{klass_name.snake_case.pluralize}
           end
         "
