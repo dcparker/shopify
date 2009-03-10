@@ -1,1 +1,2 @@
 v0.1.0 First release, a rewrite of Shopify's own Rails plugin, turned into a gem with similar workings.
+v0.1.9 2.0 Beta, another rewrite using the light HTTParty instead of ActiveResource.

@@ -2,15 +2,15 @@
 
 Gem::Specification.new do |s|
   s.name = %q{shopify}
-  s.version = "0.1.0"
+  s.version = "0.1.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Daniel Parker"]
-  s.date = %q{2008-12-10}
+  s.date = %q{2009-03-10}
   s.description = %q{Easily communicate with Shopify.com's restful API.}
   s.email = %q{gems@behindlogic.com}
-  s.extra_rdoc_files = ["CHANGELOG", "lib/shopify/address.rb", "lib/shopify/order.rb", "lib/shopify/product.rb", "lib/shopify/sale.rb", "lib/shopify/session.rb", "lib/shopify/shop.rb", "lib/shopify/site.rb", "lib/shopify.rb", "LICENSE", "README"]
-  s.files = ["CHANGELOG", "lib/shopify/address.rb", "lib/shopify/order.rb", "lib/shopify/product.rb", "lib/shopify/sale.rb", "lib/shopify/session.rb", "lib/shopify/shop.rb", "lib/shopify/site.rb", "lib/shopify.rb", "LICENSE", "Manifest", "README", "shopify.gemspec"]
+  s.extra_rdoc_files = ["CHANGELOG", "lib/shopify/support.rb", "lib/shopify.rb", "LICENSE", "README"]
+  s.files = ["CHANGELOG", "lib/shopify/support.rb", "lib/shopify.rb", "LICENSE", "Manifest", "README", "shopify.gemspec"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/dcparker/shopify/tree}
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Shopify", "--main", "README"]
@@ -24,14 +24,11 @@ Gem::Specification.new do |s|
     s.specification_version = 2
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activeresource>, [">= 0", "= 2.1.0"])
       s.add_development_dependency(%q<echoe>, [">= 0"])
     else
-      s.add_dependency(%q<activeresource>, [">= 0", "= 2.1.0"])
       s.add_dependency(%q<echoe>, [">= 0"])
     end
   else
-    s.add_dependency(%q<activeresource>, [">= 0", "= 2.1.0"])
     s.add_dependency(%q<echoe>, [">= 0"])
   end
 end

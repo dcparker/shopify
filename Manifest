@@ -1,11 +1,5 @@
 CHANGELOG
-lib/shopify/address.rb
-lib/shopify/order.rb
-lib/shopify/product.rb
-lib/shopify/sale.rb
-lib/shopify/session.rb
-lib/shopify/shop.rb
-lib/shopify/site.rb
+lib/shopify/support.rb
 lib/shopify.rb
 LICENSE
 Manifest
