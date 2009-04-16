@@ -1,3 +1,5 @@
+# :nodoc:all
+
 require 'quickbooks/extlib/class'
 require 'quickbooks/extlib/object'
 require 'quickbooks/extlib/string'

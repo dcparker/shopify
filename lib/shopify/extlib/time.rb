@@ -1,6 +1,6 @@
 require "date"
 
-class Time
+class Time # :nodoc:all
 
   ##
   # Convert to ISO 8601 representation

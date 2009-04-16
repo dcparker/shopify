@@ -1,4 +1,4 @@
-module Extlib
+module Extlib # :nodoc:all
   module Assertions
     def assert_kind_of(name, value, *klasses)
       klasses.each { |k| return if value.kind_of?(k) }

@@ -1,6 +1,6 @@
 require "pathname"
 
-class String
+class String # :nodoc:all
   ##
   # Convert to snake case.
   #

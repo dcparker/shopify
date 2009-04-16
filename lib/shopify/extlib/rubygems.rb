@@ -1,6 +1,6 @@
 # this is a temporary workaround until rubygems Does the Right thing here
 require 'rubygems'
-module Gem
+module Gem # :nodoc:all
   class SourceIndex
 
     # This is resolved in 1.1

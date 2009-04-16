@@ -1,4 +1,4 @@
-class Pathname
+class Pathname # :nodoc:all
   # Append path segments and expand to absolute path
   #
   #   file = Pathname(Dir.pwd) / "subdir1" / :subdir2 / "filename.ext"

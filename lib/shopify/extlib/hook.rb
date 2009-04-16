@@ -1,4 +1,4 @@
-module Extlib
+module Extlib # :nodoc:all
   #
   # TODO: Write more documentation!
   #

@@ -25,7 +25,7 @@
 # example, an array without those additions being shared with either their
 # parent, siblings, or children, which is unlike the regular class-level
 # attributes that are shared across the entire hierarchy.
-class Class
+class Class # :nodoc:all
   # Defines class-level and instance-level attribute reader.
   #
   # @param *syms<Array> Array of attributes to define reader for.

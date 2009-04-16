@@ -1,4 +1,4 @@
-module Extlib
+module Extlib # :nodoc:all
 
   # = English Nouns Number Inflection.
   #
@@ -422,7 +422,7 @@ module Extlib
   end
 end
 
-class Object
+class Object # :nodoc:all
   def singular
     raise MethodNotFound, caller(1) unless self.respond_to?(:to_s)
     Extlib::Inflection.singular(to_s)

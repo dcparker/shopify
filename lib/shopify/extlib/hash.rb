@@ -1,4 +1,4 @@
-class Hash
+class Hash # :nodoc:all
   ##
   # Convert to URL query param string
   #
@@ -171,7 +171,7 @@ require 'rexml/light/node'
 # It's mainly just adding vowels, as I ht cd wth n vwls :)
 # This represents the hard part of the work, all I did was change the
 # underlying parser.
-class REXMLUtilityNode
+class REXMLUtilityNode # :nodoc:all
   attr_accessor :name, :attributes, :children, :type
   cattr_accessor :typecasts, :available_typecasts
 

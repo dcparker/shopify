@@ -1,4 +1,4 @@
-class Object
+class Object # :nodoc:all
   # Extracts the singleton class, so that metaprogramming can be done on it.
   #
   # @return <Class> The meta class.

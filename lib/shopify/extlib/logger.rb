@@ -31,7 +31,7 @@ require "time" # httpdate
 #
 # To initialize the logger you create a new object, proxies to set_log.
 #   Merb::Logger.new(log{String, IO},level{Symbol, String})
-module Extlib
+module Extlib # :nodoc:all
 
   class << self
     attr_accessor :logger
