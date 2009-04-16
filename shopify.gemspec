@@ -6,8 +6,6 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Daniel Parker"]
-  # s.cert_chain = ["/Users/daniel/.gem_keys/gem-public_cert.pem"]
-  # s.signing_key = %q{/Users/daniel/.gem_keys/gem-private_key.pem}
   s.date = %q{2009-04-16}
   s.description = %q{Easily communicate with Shopify.com's restful API.}
   s.email = %q{gems@behindlogic.com}
