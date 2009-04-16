@@ -9,11 +9,11 @@ Example Usage:
 <pre>
   shop = Shopify.new('store_name', 'api-key', 'api-secret', 'auth-token')
   order = shop.orders(:limit => 1)[0] # => gets first order
-  order.line_items # => the line items within that order
-  order.fulfillments # => gets all fulfillments related to this order
-  blogs = shop.blogs # => gets all blogs for this shop
-  articles = blogs[0].articles # => gets all the articles in this blog
-  articles[0].comments # => gets the comments for that article
-  shop.products # => get all products in this shop
+  order.line_items                    # => the line items within that order
+  order.fulfillments                  # => gets all fulfillments related to this order
+  blogs = shop.blogs                  # => gets all blogs for this shop
+  articles = blogs[0].articles        # => gets all the articles in this blog
+  articles[0].comments                # => gets the comments for that article
+  shop.products                       # => get all products in this shop
   ... and much more ... :)
 </pre>
