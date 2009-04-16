@@ -9,5 +9,7 @@ Echoe.new('shopify') do |p|
   p.need_gem = true
   p.need_zip = true
   p.require_signed = false
+    p.certificate_chain = nil
+    p.private_key = nil
   p.include_rakefile = false
 end
