@@ -2,24 +2,52 @@ include_path = File.expand_path(File.dirname(__FILE__))
 $:.unshift(include_path) unless $:.include?(include_path)
 require 'shopify/support'
 
-module Shopify
-  include HTTParty
+# Class: Shopify
+# Usage:
+#   shop = Shopify.new(host, [key, [secret, [token]]])
+#   shop.orders
+# TODO: Make the object remember the results of queries such as shop.orders when called without parameters,
+#       and reload only when you call shop.orders(true)
+class Shopify
+  attr_reader :host
 
-  def self.setup(host, key=nil, secret=nil, token=nil)
+  def initialize(host, key=nil, secret=nil, token=nil)
+    @default_options = {}
+    extend HTTParty::ClassMethods
+
     host.gsub!(/https?:\/\//, '') # remove http(s)://
     @host = host.include?('.') ? host : "#{host}.myshopify.com" # extend url to myshopify.com if no host is given
     @key    = key
     @secret = secret
     @token  = token
-    if [host, key, secret, token].all?
+    setup
+  end
+
+  def needs_authorization?
+    ![@host, @key, @secret, @token].all?
+  end
+
+  def authorize!(token)
+    @token = token
+    setup
+  end
+
+  def authorization_url(mode='w')
+    "http://#{@host}/admin/api/auth?api_key=#{@key}&mode=#{mode}"
+  end
+
+  def setup
+    unless needs_authorization?
       base_uri "http://#{@host}/admin"
       basic_auth @key, Digest::MD5.hexdigest("#{@secret.chomp}#{@token.chomp}")
       format :xml
-      return false
-    else
-      "http://#{@host}/admin/api/auth?api_key=#{@key}&mode=#{mode}"
     end
   end
+  private :setup
+
+  ##############################
+  ##  Shopify Object Classes  ##
+  ##############################
 
   # /admin/blogs.xml
   class Blog < ShopifyModel
@@ -33,7 +61,7 @@ module Shopify
 
   # /admin/blogs/[blog_id]/articles.xml
   class Article < ShopifyModel
-    child_of Blog
+    children_of Blog
     attr_accessor :author, :blog_id, :body, :body_html, :created_at, :id, :published_at, :title, :updated_at
     def comments(query_params={})
       Shopify.comments(query_params.merge(:article_id => id, :blog_id => blog_id))
@@ -86,13 +114,13 @@ module Shopify
   end
 
   class LineItem < ShopifyModel
-    child_of Order
+    children_of Order
     attr_accessor :fulfillment_service, :grams, :id, :price, :quantity, :sku, :title, :variant_id, :vendor, :name, :product_title
   end
 
   # /admin/orders/[order_id]/fulfillments.xml
   class Fulfillment < ShopifyModel
-    child_of Order
+    children_of Order
     attr_accessor :id, :order_id, :status, :tracking_number, :line_items, :receipt
   end
 
@@ -118,19 +146,19 @@ module Shopify
 
   # /admin/products/[product_id]/images.xml
   class Image < ShopifyModel
-    child_of Product
+    children_of Product
     attr_accessor :id, :position, :product_id, :src
   end
 
   # /admin/products/[product_id]/variants.xml
   class Variant < ShopifyModel
-    child_of Product
+    children_of Product
     attr_accessor :compare_at_price, :fulfillment_service, :grams, :id, :inventory_management, :inventory_policy, :inventory_quantity, :position, :price, :product_id, :sku, :title
   end
 
   # /admin/countries/[country_id]/provinces.xml
   class Province < ShopifyModel
-    child_of Country
+    children_of Country
     attr_accessor :code, :id, :name, :tax
   end
 
@@ -148,7 +176,7 @@ module Shopify
 
   # /admin/orders/[order_id]/transactions.xml
   class Transaction < ShopifyModel
-    child_of Order
+    children_of Order
     attr_accessor :amount, :authorization, :created_at, :kind, :order_id, :status, :receipt
   end
 end
