@@ -1,3 +1,5 @@
+v0.2.1 Dependency fix for httparty.
+
 v0.2.0 Second release, using HTTParty, capable of multiple shop connections in one app, and thread-safe.
 
 v0.1.9 2.0 Beta, another rewrite using the light HTTParty instead of ActiveResource.
