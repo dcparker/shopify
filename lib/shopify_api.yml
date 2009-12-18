@@ -1,0 +1,35 @@
+---
+Blogs:
+  :properties: commentable, feedburner, feedburner_locations, handle, id, shop_id, title, updated_at
+  Articles:
+    :properties: author, blog_id, body, body_html, created_at, id, published_at, title, updated_at
+Comments:
+  :properties: article_id, author, blog_id, body, body_html, created_at, email, id, ip, published_at, shop_id, status, updated_at, user_agent
+Collects:
+  :properties: collection_id, featured, id, position, product_id
+Countries:
+  :properties: code, id, name, tax
+  Provinces:
+    :properties: code, id, name, tax
+CustomCollections:
+  :properties: body, body_html, handle, id, published_at, sort_order, title, updated_at
+Orders:
+  :properties: buyer_accepts_marketing, closed_at, created_at, currency, email, financial_status, fulfillment_status, gateway, id, name, note, number, subtotal_price, taxes_included, token, total_discounts, total_line_items_price, total_price, total_tax, total_weight, updated_at, browser_ip, billing_address, shipping_address, line_items, shipping_line
+  LineItems:
+    :properties: fulfillment_service, grams, id, price, quantity, sku, title, variant_id, vendor, name, product_title
+  Fulfillments:
+    :properties: id, order_id, status, tracking_number, line_items, receipt
+  Transactions:
+    :properties: amount, authorization, created_at, kind, order_id, status, receipt
+Pages:
+  :properties: author, body, body_html, created_at, handle, ip, published_at, shop_id, title, updated_at
+Products:
+  :properties: body, body_html, created_at, handle, id, product_type, published_at, title, updated_at, vendor, tags, variants, images
+  Images:
+    :properties: id, position, product_id, src
+  Variants:
+    :properties: compare_at_price, fulfillment_service, grams, id, inventory_management, inventory_policy, inventory_quantity, position, price, product_id, sku, title
+Redirects:
+  :properties: id, path, shop_id, target
+Shop:
+  :properties: active_subscription_id, address1, city, country, created_at, domain, email, id, name, phone, province, public, source, zip, taxes_included, currency, timezone, shop_owner

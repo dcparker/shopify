@@ -1,20 +1,18 @@
-include_path = File.expand_path(File.dirname(__FILE__))
-$:.unshift(include_path) unless $:.include?(include_path)
-require 'shopify/support'
+require 'extlib'
+require 'bigdecimal'
+require 'digest/md5'
+require 'httparty'
+
 
 # Class: Shopify
 # Usage:
 #   shop = Shopify.new(host, [key, [secret, [token]]])
 #   shop.orders
-# TODO: Make the object remember the results of queries such as shop.orders when called without parameters,
-#       and reload only when you call shop.orders(true)
 class Shopify
   attr_reader :host
+  include HTTParty
 
   def initialize(host, key=nil, secret=nil, token=nil)
-    @default_options = {}
-    extend HTTParty::ClassMethods
-
     host.gsub!(/https?:\/\//, '') # remove http(s)://
     @host = host.include?('.') ? host : "#{host}.myshopify.com" # extend url to myshopify.com if no host is given
     @key    = key
@@ -38,145 +36,143 @@ class Shopify
 
   def setup
     unless needs_authorization?
-      base_uri "http://#{@host}/admin"
-      basic_auth @key, Digest::MD5.hexdigest("#{@secret.chomp}#{@token.chomp}")
-      format :xml
+      @base_uri = "http://#{@host}/admin"
+      @basic_auth = {:username => @key, :password => Digest::MD5.hexdigest("#{@secret.chomp}#{@token.chomp}")}
+      @format = :xml
     end
   end
   private :setup
 
-  ##############################
-  ##  Shopify Object Classes  ##
-  ##############################
+  def options(opts={})
+    {:base_uri => @base_uri, :basic_auth => @basic_auth, :format => @format}.merge(opts)
+  end
 
-  # /admin/blogs.xml
-  class Blog < ShopifyModel
-    top_level
-    attr_accessor :commentable, :feedburner, :feedburner_locations, :handle, :id, :shop_id, :title, :updated_at
-    
-    # Get all articles in this blog.
-    def articles
+
+  class ShopifyModel
+    class << self
+      def load_api_classes(api)
+        api.each_key do |klass_name|
+          next unless klass_name.is_a?(String)
+          mode = []
+          singular = klass_name.singular
+          mode = [:singular] if singular == klass_name
+          klass = Shopify.const_set(singular, Class.new(ShopifyModel))
+
+          # Set up the top_level or children_of setting
+          self == ShopifyModel ?
+            klass.send(:top_level, *mode) :
+            klass.send(:children_of, self)
+
+          # Set up the properties
+          klass.send(:attr_accessor, *api[klass_name].delete(:properties).split(', ').map {|s| s.to_sym})
+          
+          # If there are any children to be had, set them up
+          klass.load_api_classes(api[klass_name])
+        end
+      end
+
+      def top_level(*options)
+        klass_name = self.name.gsub(/.*::/,'')
+        if options.include?(:singular)
+          # Defines the singular accessor in the Shopify object
+          # TODO: Make the object cache the results of queries, per set of parameters,
+          #       and reload only when you include true as the first argument.
+          Shopify.class_eval "
+            def #{klass_name.snake_case}(query_params={})
+              json = Shopify.get(\"/#{klass_name.snake_case}.xml\", options(:query => query_params))
+              begin
+                #{klass_name}.instantiate(self, json['#{klass_name.snake_case}'])
+              rescue => e
+                warn \"Error: \#{e.inspect}\"
+                json
+              end
+            end
+          "
+        else
+          # Defines the plural accessor in the Shopify object
+          # TODO: Make the object cache the results of queries, per set of parameters,
+          #       and reload only when you include true as the first argument.
+          Shopify.class_eval "
+            def #{klass_name.snake_case.pluralize}(query_params={})
+              json = Shopify.get(\"/#{klass_name.snake_case.pluralize}.xml\", options(:query => query_params))
+              if json['#{klass_name.snake_case.pluralize}']
+                json['#{klass_name.snake_case.pluralize}'].collect {|i| #{klass_name}.instantiate(self, i)}
+              else
+                json
+              end
+            end
+            def #{klass_name.snake_case}(id)
+              json = Shopify.get(\"/#{klass_name.snake_case.pluralize}/\#{id}.xml\", options)
+              if json['#{klass_name.snake_case}']
+                #{klass_name}.instantiate(self, json['#{klass_name.snake_case}'])
+              else
+                json
+              end
+            end
+          "
+        end
+      end
+      def children_of(parent_klass)
+        @parent = parent_klass
+        parent_klass_name = parent_klass.name.gsub(/.*::/,'')
+        klass_name = self.name.gsub(/.*::/,'')
+        # Defines the getter method in the parent class
+        # TODO: Make the object cache the results of queries, per set of parameters,
+        #       and reload only when you include true as the first argument.
+        parent_klass.class_eval "
+          def #{klass_name.snake_case.pluralize}(query_params={})
+            @#{klass_name.snake_case.pluralize} ||= begin
+              json = Shopify.get(\"/#{parent_klass_name.snake_case.pluralize}/\#{id}/#{klass_name.snake_case.pluralize}.xml\", shop.options(:query => query_params))
+              case 
+              when json['#{parent_klass_name.snake_case}_#{klass_name.snake_case.pluralize}']
+                json['#{parent_klass_name.snake_case}_#{klass_name.snake_case.pluralize}']
+              when json['#{klass_name.snake_case.pluralize}']
+                json['#{klass_name.snake_case.pluralize}']
+              else
+                json
+              end
+            end
+            @#{klass_name.snake_case.pluralize} = (@#{klass_name.snake_case.pluralize}.is_a?(Array) ? @#{klass_name.snake_case.pluralize}.collect {|i| #{klass_name}.instantiate(shop, i)} : [#{klass_name}.instantiate(shop, @#{klass_name.snake_case.pluralize})]) unless @#{klass_name.snake_case.pluralize}.is_a?(#{klass_name}) || @#{klass_name.snake_case.pluralize}.is_a?(Array) && @#{klass_name.snake_case.pluralize}[0].is_a?(#{klass_name})
+            @#{klass_name.snake_case.pluralize}
+          end
+        "
+      end
+      def is_child?
+        (@parent ||= nil)
+      end
+    end
+
+    def self.instantiate(shop, attrs={})
+      new(shop, attrs.merge('new_record' => false))
+    end
+    def initialize(shop, attrs={})
+      @new_record = true
+      attrs.each { |k,v| instance_variable_set("@#{k}", v) }
+      @shop = shop
+    end
+    attr_accessor :shop
+
+    def inspect
+      "<#{self.class.name} shop=#{@shop.host} #{instance_variables.reject {|i| i=='@shop' || instance_variable_get(i).to_s==''}.map {|i| "#{i}=#{instance_variable_get(i).inspect}"}.join(' ')}>"
     end
   end
 
-  # /admin/blogs/[blog_id]/articles.xml
+
+  ########################################
+  ##  Load the Shopify Object Classes!  ##
+  ########################################
+  ShopifyModel.load_api_classes YAML.load_file(File.dirname(__FILE__)+'/shopify_api.yml')
+
+
+  # Add some extra touches to a couple of the models
   class Article < ShopifyModel
-    children_of Blog
-    attr_accessor :author, :blog_id, :body, :body_html, :created_at, :id, :published_at, :title, :updated_at
     def comments(query_params={})
-      Shopify.comments(query_params.merge(:article_id => id, :blog_id => blog_id))
+      shop.comments(query_params.merge(:article_id => id, :blog_id => blog_id))
     end
   end
-
-  # /admin/comments.xml?article_id=*&blog_id=*
-  class Comment < ShopifyModel
-    top_level
-    attr_accessor :article_id, :author, :blog_id, :body, :body_html, :created_at, :email, :id, :ip, :published_at, :shop_id, :status, :updated_at, :user_agent
-  end
-
-  # /admin/collects.xml
-  class Collect < ShopifyModel
-    top_level
-    attr_accessor :collection_id, :featured, :id, :position, :product_id
-  end
-
-  # /admin/countries.xml
-  class Country < ShopifyModel
-    top_level
-    attr_accessor :code, :id, :name, :tax
-
-    # Get all province divisions within this country.
-    def provinces
-    end
-  end
-
-  # /admin/custom_collections.xml
   class CustomCollection < ShopifyModel
-    top_level
-    attr_accessor :body, :body_html, :handle, :id, :published_at, :sort_order, :title, :updated_at
     def products(query_params={})
-      Shopify.products(query_params.merge(:collection_id => id))
+      shop.products(query_params.merge(:collection_id => id))
     end
-  end
-
-  # /admin/orders.xml
-  class Order < ShopifyModel
-    top_level
-    attr_accessor :buyer_accepts_marketing, :closed_at, :created_at, :currency, :email, :financial_status, :fulfillment_status, :gateway, :id, :name, :note, :number, :subtotal_price, :taxes_included, :token, :total_discounts, :total_line_items_price, :total_price, :total_tax, :total_weight, :updated_at, :browser_ip, :billing_address, :shipping_address, :line_items, :shipping_line
-
-    # Get all fulfillments related to this order.
-    def fulfillments
-    end
-
-    # Get all transactions related to this order.
-    def transactions
-    end
-  end
-
-  class LineItem < ShopifyModel
-    children_of Order
-    attr_accessor :fulfillment_service, :grams, :id, :price, :quantity, :sku, :title, :variant_id, :vendor, :name, :product_title
-  end
-
-  # /admin/orders/[order_id]/fulfillments.xml
-  class Fulfillment < ShopifyModel
-    children_of Order
-    attr_accessor :id, :order_id, :status, :tracking_number, :line_items, :receipt
-  end
-
-  # /admin/pages.xml
-  class Page < ShopifyModel
-    top_level
-    attr_accessor :author, :body, :body_html, :created_at, :handle, :ip, :published_at, :shop_id, :title, :updated_at
-  end
-
-  # /admin/products.xml?collection_id=*
-  class Product < ShopifyModel
-    top_level
-    attr_accessor :body, :body_html, :created_at, :handle, :id, :product_type, :published_at, :title, :updated_at, :vendor, :tags, :variants, :images
-
-    # Get all images for this product.
-    def images
-    end
-
-    # Get all variants of this product.
-    def variant
-    end
-  end
-
-  # /admin/products/[product_id]/images.xml
-  class Image < ShopifyModel
-    children_of Product
-    attr_accessor :id, :position, :product_id, :src
-  end
-
-  # /admin/products/[product_id]/variants.xml
-  class Variant < ShopifyModel
-    children_of Product
-    attr_accessor :compare_at_price, :fulfillment_service, :grams, :id, :inventory_management, :inventory_policy, :inventory_quantity, :position, :price, :product_id, :sku, :title
-  end
-
-  # /admin/countries/[country_id]/provinces.xml
-  class Province < ShopifyModel
-    children_of Country
-    attr_accessor :code, :id, :name, :tax
-  end
-
-  # /admin/redirects.xml
-  class Redirect < ShopifyModel
-    top_level
-    attr_accessor :id, :path, :shop_id, :target
-  end
-
-  # /admin/shop.xml
-  class Shop < ShopifyModel
-    top_level :singular
-    attr_accessor :active_subscription_id, :address1, :city, :country, :created_at, :domain, :email, :id, :name, :phone, :province, :public, :source, :zip, :taxes_included, :currency, :timezone, :shop_owner
-  end
-
-  # /admin/orders/[order_id]/transactions.xml
-  class Transaction < ShopifyModel
-    children_of Order
-    attr_accessor :amount, :authorization, :created_at, :kind, :order_id, :status, :receipt
   end
 end
