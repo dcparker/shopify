@@ -1,6 +1,6 @@
-require 'extlib'
 require 'bigdecimal'
 require 'digest/md5'
+require 'extlib'
 require 'httparty'
 
 
